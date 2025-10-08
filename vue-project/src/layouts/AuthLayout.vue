@@ -1,8 +1,15 @@
 <template>
   <v-app>
-    <v-main class="d-flex align-center justify-center">
-      <router-view />
+    <Navbar />
+
+    <v-main>
+      <router-view />  
+      <Footer />       
     </v-main>
   </v-app>
 </template>
-<script setup lang="ts"></script>
+
+<script setup lang="ts">
+import Navbar from '../components/Navbar.vue'
+import Footer from '../components/Footer.vue'
+</script>

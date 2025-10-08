@@ -6,11 +6,14 @@ import Login from '../pages/auth/Login.vue'
 import Register from '../pages/auth/Register.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import CreateNewEvent from '@/pages/CreateNewEvent.vue'
 const routes=[
   {path:'/', name:'Home', component: MainLayout, children: [
-    { path: '', component: Home },
+    { path: '',name:'home', component: Home },
     { path: 'events/:id', name: 'EventDetails', component: EventDetails },
     { path: 'profile', name: 'Profile', component: Profile },
+    { path: 'createNewEvent', name: 'newEvent', component: CreateNewEvent },
+
   ]},
   {path:'/auth', name:'AuthLayout', component: AuthLayout, children: [
     { path: 'login', name: 'Login', component: Login },

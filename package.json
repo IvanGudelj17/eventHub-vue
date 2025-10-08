@@ -1,0 +1,12 @@
+{
+  "name": "eventhub",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd vue-project && npm run dev",
+    "dev:backend": "cd eventhub-server && npm run dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

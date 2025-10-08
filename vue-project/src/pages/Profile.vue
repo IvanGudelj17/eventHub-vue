@@ -1,7 +1,20 @@
 <script setup lang="ts">
 import { useFavoriteStore } from '@/store/favorites'
+import { UseAuthStore } from '@/store/auth.ts'
+import { computed, onMounted, ref } from 'vue'
 
 const favoriteStore = useFavoriteStore()
+const authStore = UseAuthStore()
+
+const anyFavoriteExist = computed(() => favoriteStore.favoriteEvents.length > 0)
+
+onMounted(async () => {
+  await authStore.fetchUser()
+  if(authStore.user){
+    await favoriteStore.fetchFavorites(authStore.user?.id)
+    favoriteStore.isLoaded = true
+  }
+})
 </script>
 
 <template>
@@ -15,25 +28,20 @@ const favoriteStore = useFavoriteStore()
           </v-card-title>
           <v-divider class="mb-4"></v-divider>
 
-          <v-avatar size="100" class="mb-4">
             <v-img src="https://i.pravatar.cc/150?img=12" />
-          </v-avatar>
-
           <p class="text-body-1 font-weight-medium mb-2">
-            Name: <span class="font-weight-regular">Guest User</span>
+            Name: <span class="font-weight-regular">{{ authStore.user?.email.split('@')[0] }}</span>
           </p>
-          <p class="text-body-1 font-weight-medium mb-2">
-            Email: <span class="font-weight-regular">Not logged in</span>
-          </p>
-          <p class="text-body-1 font-weight-medium">
-            Bio: <span class="font-weight-regular">Will be editable after login</span>
-          </p>
-
-          <v-card-actions>
+          <p><strong>Email:</strong> {{ authStore.user?.email }}</p>
+            <v-card-actions>
             <v-btn color="primary" variant="outlined" block>
               Edit Profile
             </v-btn>
+              
           </v-card-actions>
+          <v-btn color="primary" variant="outlined" to="/createNewEvent" block>
+             Create New Event
+            </v-btn>
         </v-card>
       </v-col>
 
@@ -43,9 +51,12 @@ const favoriteStore = useFavoriteStore()
           <v-card-title class="text-h6 font-weight-bold">
             Favorite Events
           </v-card-title>
-          <v-divider class="mb-4"></v-divider>
+          <div v-if="!favoriteStore.isLoaded">
+            <v-progress-circular indeterminate color="primary" />
+          </div>
 
-          <div v-if="favoriteStore.favoriteEvents.length === 0">
+          <v-divider class="mb-4"></v-divider>
+          <div v-if="!anyFavoriteExist">
             <p class="text-body-1 text-grey-darken-1">
               You don't have any favorite events yet.
             </p>
@@ -60,7 +71,7 @@ const favoriteStore = useFavoriteStore()
               md="6"
             >
               <v-card max-width="350" elevation="2" class="mx-auto" rounded="lg">
-                <v-img :src="event.image" height="160" cover />
+                <v-img :src="event.image || 'https://picsum.photos/200/300'" height="160" cover />
                 <v-card-title>{{ event.title }}</v-card-title>
                 <v-card-subtitle>
                   {{ event.location }} • {{ event.date }}

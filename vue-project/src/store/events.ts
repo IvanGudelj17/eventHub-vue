@@ -1,34 +1,31 @@
 import { defineStore } from 'pinia'
 import type { Event } from '../types/types.ts'
+import axios from 'axios'
 export const useEventStore = defineStore('events', {
   state: () => ({
-    events: [
-      {
-        id: 1,
-        title: 'Vue.js Conference',
-        date: '2025-10-15',
-        location: 'Zagreb',
-        image: 'https://source.unsplash.com/random/400x200?conference'
-      },
-      {
-        id: 2,
-        title: 'Node.js Meetup',
-        date: '2025-11-05',
-        location: 'Split',
-        image: 'https://source.unsplash.com/random/400x200?programming'
-      },
-      {
-        id: 3,
-        title: 'AI in Tech',
-        date: '2025-12-01',
-        location: 'Osijek',
-        image: 'https://source.unsplash.com/random/400x200?ai'
-      }
-    ] as Event[]
+    events: [] as Event[]
   }),
   getters: {
-    getEventById: (state) => {
-        return (id: number) => state.events.find((ev: Event) => ev.id === id)
-    }
+  getEventById: (state) => {
+    return (id: number) => state.events.find(ev => ev.id === id)
+  },
+  },
+  actions:{
+    async createNewEvent(title:string, location:string, image:string, date:Date){
+      const res = await axios.post('http://localhost:3000/events/createNewEvent',{title, location, image,date})
+      console.log('new event is going to be added - ',title, location, image,date)
+      const newEvent = res.data.user ?? res.data
+      this.events.push(newEvent)
+      return newEvent
+    },
+    async collectExistingEventsFromDataBase(){
+  try {
+    const res = await axios.get('http://localhost:3000/events/getAllEvents')
+    this.events = res.data // zamijeni stanje s novim eventima
+    return res.data
+  } catch (err) {
+    console.error('Cannot fetch events:', err)
+    throw err
   }
+  }}
 })
